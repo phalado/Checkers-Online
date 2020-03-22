@@ -1,4 +1,3 @@
-// import Phaser from 'phaser';
 import Entity from './Entity';
 
 class RedPiece extends Entity {
@@ -45,8 +44,8 @@ class RedPiece extends Entity {
   }
 
   update() {
-    this.x = this.game.config.width * this.scene.boardXValue[this.getData('boardX')];
-    this.y = this.game.config.height * this.scene.boardYValue[this.getData('boardY')];
+    this.x = this.scene.game.config.width * this.scene.boardXValues[this.getData('boardY')];
+    this.y = this.scene.game.config.height * this.scene.boardYValues[this.getData('boardX')];
   }
 }
 

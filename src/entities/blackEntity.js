@@ -6,10 +6,9 @@ class BlackPiece extends Entity {
     this.setData('boardX', 0);
     this.setData('boardY', 0);
     this.setData('checker', false);
-    this.play('blackPiece');
   }
 
-  updatePosition(x, y) {
+  updatePosition(y, x) {
     this.setData('boardX', x);
     this.setData('boardY', y);
   }
@@ -18,25 +17,25 @@ class BlackPiece extends Entity {
     this.MP = [];
     this.pos = [this.getData('boardX'), this.getData('boardY')];
 
-    if (this.pos[0] > 0 && this.pos[1] < 7) {
-      if (this.scene.board[this.pos[0] + 1][this.pos[1] - 1] === 0) {
-        this.MP.push([this.pos[0] + 1, this.pos[1] - 1]);
+    if (this.pos[0] > 0 && this.pos[1] > 0) {
+      if (this.scene.board[this.pos[0] - 1][this.pos[1] - 1] === 0) {
+        this.MP.push([this.pos[0] - 1, this.pos[1] - 1]);
       } else if (this.pos[0] > 1
-        && this.pos[1] < 6
-        && this.scene.board[this.pos[0] + 1][this.pos[1] - 1] === 'black'
-        && this.scene.board[this.pos[0] + 2][this.pos[1] - 2] === 0) {
-        this.MP.push([this.pos[0] + 2, this.pos[1] - 2]);
+                && this.pos[1] > 1
+                && this.scene.board[this.pos[0] - 1][this.pos[1] - 1].data.list.type === 'RedPiece'
+                && this.scene.board[this.pos[0] - 2][this.pos[1] - 2] === 0) {
+        this.MP.push([this.pos[0] - 2, this.pos[1] - 2]);
       }
     }
 
-    if (this.pos[0] < 7 && this.pos[1] < 7) {
-      if (this.scene.board[this.pos[0] + 1][this.pos[1] + 1] === 0) {
-        this.MP.push([this.pos[0] + 1, this.pos[1] - 1]);
-      } else if (this.pos[0] < 6
-        && this.pos[1] < 6
-        && this.scene.board[this.pos[0] + 1][this.pos[1] - 1] === 'black'
-        && this.scene.board[this.pos[0] + 2][this.pos[1] - 2] === 0) {
-        this.MP.push([this.pos[0] + 2, this.pos[1] - 2]);
+    if (this.pos[0] > 0 && this.pos[1] < 7) {
+      if (this.scene.board[this.pos[0] - 1][this.pos[1] + 1] === 0) {
+        this.MP.push([this.pos[0] - 1, this.pos[1] + 1]);
+      } else if (this.pos[0] > 1
+                && this.pos[1] < 6
+                && this.scene.board[this.pos[0] - 1][this.pos[1] + 1].data.list.type === 'RedPiece'
+                && this.scene.board[this.pos[0] - 2][this.pos[1] + 2] === 0) {
+        this.MP.push([this.pos[0] - 2, this.pos[1] + 2]);
       }
     }
 

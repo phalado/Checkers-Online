@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import SceneGame from './scenes/SceneGame';
+import SceneGameOver from './scenes/SceneGameOver';
 
 const config = {
   type: Phaser.WEBGL,
@@ -18,6 +19,7 @@ const config = {
   },
   scene: [
     SceneGame,
+    SceneGameOver,
   ],
   pixelArt: true,
   roundPixels: true,

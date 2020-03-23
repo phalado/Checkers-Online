@@ -140,11 +140,37 @@ class SceneGame extends Phaser.Scene {
   }
 
   checkEndGame() {
-    // if (this.RedPiece.children.size === 0
-    //     || ) {
-    //       this.redPieces.getChildren().forEach((piece) => {
-    //         if (piece.movePossibility(this.scene.color).length !== 0)
-    // }
+    if (this.RedPiece.children.size === 0
+        || !this.checkMovePossibility()) {
+      this.time.addEvent({
+        delay: 3000,
+        callback() {
+          this.scene.start('SceneGameOver');
+        },
+        callbackScope: this,
+        loop: true,
+      });
+    }
+  }
+
+  checkMovePossibility() {
+    if (this.scene.color) {
+      // eslint-disable-next-line consistent-return
+      this.redPieces.getChildren().forEach((piece) => {
+        if (piece.movePossibility(true).length !== 0) {
+          return true;
+        }
+      });
+    } else {
+      // eslint-disable-next-line consistent-return
+      this.blackPieces.getChildren().forEach((piece) => {
+        if (piece.movePossibility(true).length !== 0) {
+          return true;
+        }
+      });
+    }
+
+    return false;
   }
 
   moveAnim(piece, newPosition, delay = 0) {

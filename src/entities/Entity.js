@@ -194,6 +194,11 @@ class Entity extends Phaser.GameObjects.Sprite {
 
     return '';
   }
+
+  update() {
+    this.x = this.scene.game.config.width * this.scene.boardHValues[this.getData('boardH')];
+    this.y = this.scene.game.config.height * this.scene.boardVValues[this.getData('boardV')];
+  }
 }
 
 export default Entity;

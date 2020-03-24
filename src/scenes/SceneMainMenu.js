@@ -9,6 +9,7 @@ class SceneMainMenu extends Phaser.Scene {
 
   create() {
     // const api = express();
+    this.socket = io();
 
     this.startGame = this.add.text(
       this.game.config.width * 0.2,

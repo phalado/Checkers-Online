@@ -13,13 +13,6 @@ class SceneGame extends Phaser.Scene {
     this.load.image('redChecker', 'content/redChecker.png');
     this.load.image('blackPiece', 'content/blackPiece.png');
     this.load.image('blackChecker', 'content/blackChecker.png');
-
-    this.load.spritesheet('sprExplosion', 'content/sprExplosion.png', {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-    this.load.audio('sndExplode0', 'content/sndExplode0.wav');
-    this.load.audio('sndExplode1', 'content/sndExplode1.wav');
   }
 
   create() {
@@ -132,7 +125,7 @@ class SceneGame extends Phaser.Scene {
       this.moveAnim(piece, positionArray[i], i * 1000);
     }
 
-    this.scene.scene.board[positionArray[lenf - 1][0]][positionArray[lenf - 1][1]] = piece;
+    this.board[positionArray[lenf - 1][0]][positionArray[lenf - 1][1]] = piece;
     piece.updatePosition(...positionArray[lenf - 1]);
     this.deleteInteractiveness();
     this.checkEndGame();
@@ -140,8 +133,8 @@ class SceneGame extends Phaser.Scene {
   }
 
   checkEndGame() {
-    if (this.RedPiece.children.size === 0
-        || !this.checkMovePossibility()) {
+    if (this.blackPieces.children.size === 0
+        || this.checkMovePossibility()) {
       this.time.addEvent({
         delay: 3000,
         callback() {
@@ -154,16 +147,16 @@ class SceneGame extends Phaser.Scene {
   }
 
   checkMovePossibility() {
-    if (this.scene.color) {
+    if (this.color) {
       // eslint-disable-next-line consistent-return
-      this.redPieces.getChildren().forEach((piece) => {
-        if (piece.movePossibility(true).length !== 0) {
+      this.blackPieces.getChildren().forEach((piece) => {
+        if (piece.movePossibility(false).length !== 0) {
           return true;
         }
       });
     } else {
       // eslint-disable-next-line consistent-return
-      this.blackPieces.getChildren().forEach((piece) => {
+      this.redPieces.getChildren().forEach((piece) => {
         if (piece.movePossibility(true).length !== 0) {
           return true;
         }

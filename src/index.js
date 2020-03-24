@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import SceneGame from './scenes/SceneGame';
 import SceneGameOver from './scenes/SceneGameOver';
-import SceneMainMenu from '.;scenes/SceneMainMenu';
+import SceneMainMenu from './scenes/SceneMainMenu';
 
 const config = {
   type: Phaser.WEBGL,

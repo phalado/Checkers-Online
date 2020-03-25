@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 // import express from 'express';
 import makeId from '../gameHelpers';
+import waitSecondPlayer from '../apiCalls';
 
 class SceneMainMenu extends Phaser.Scene {
   constructor() {
@@ -9,7 +10,9 @@ class SceneMainMenu extends Phaser.Scene {
 
   create() {
     // const api = express();
+    // eslint-disable-next-line no-undef
     this.socket = io();
+    this.color = false;
 
     this.startGame = this.add.text(
       this.game.config.width * 0.2,
@@ -29,13 +32,19 @@ class SceneMainMenu extends Phaser.Scene {
       this.startGame.text = id;
       this.startGame.disableInteractive();
 
-      // api.use((req, res, next) => {
-      //   console.log(id);
-      //   next();
-      // });
+      this.socket.emit('startGame', 1);
 
-      // api.listen(3000, () => {
-      //   console.log('API runnign');
+      // this.socket.on('startingGame', (message) => {
+      //   this.color = false;
+      //   console.log(message);
+      //   while (message) {
+      //     console.log('Waiting for the other player!');
+      //     this.color = true;
+      //   }
+      //   console.log(message);
+      //   console.log(this.color);
+      //   console.log('Starting game!');
+      //   this.scene.start('SceneGame', { socket: this.socket, color: this.color });
       // });
     });
 
@@ -54,6 +63,26 @@ class SceneMainMenu extends Phaser.Scene {
     this.enterGame.setInteractive();
     this.enterGame.on('pointerup', () => {
       this.scene.start('SceneGame');
+    });
+  }
+
+  update() {
+    this.time.addEvent({
+      delay: 1000,
+      callback() {
+        this.socket.on('startingGame', (message) => {
+          if (message) {
+            console.log('Waiting for the other player!');
+            this.color = message;
+            console.log(this.color);
+          } else {
+            console.log('Starting game!');
+            this.scene.start('SceneGame', { socket: this.socket, color: this.color });
+          }
+        });
+      },
+      callbackScope: this,
+      loop: false,
     });
   }
 }

@@ -7,6 +7,11 @@ class SceneGame extends Phaser.Scene {
     super({ key: 'SceneGame' });
   }
 
+  init(data) {
+    this.socket = data.socket;
+    this.color = data.color;
+  }
+
   preload() {
     this.load.image('board', 'content/board.png');
     this.load.image('redPiece', 'content/redPiece.png');
@@ -22,80 +27,95 @@ class SceneGame extends Phaser.Scene {
       'board',
     );
 
+    // eslint-disable-next-line no-undef
     this.redPieces = this.add.group();
     this.blackPieces = this.add.group();
 
-
     this.physics.add.collider(this.redPieces, this.blackPieces, (red, black) => {
       this.board[black.getData('boardV')][black.getData('boardH')] = 0;
-      black.destroy();
+      if (this.turn) {
+        this.color ? black.destroy() : red.destroy;
+      } else {
+        this.color ? red.destroy() : black.destroy;
+      }
     });
 
-    this.color = true;
+    this.turn = this.color;
     this.boardVertValues = [0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88];
     this.boardHorzValues = [0.214, 0.295, 0.378, 0.46, 0.54, 0.623, 0.707, 0.788];
 
     this.board = this.createBoard();
 
-    //Delete this in the future
-    this.bPiece = new BlackPiece(
-      this,
-      this.game.config.width * this.boardHorzValues[3],
-      this.game.config.height * this.boardVertValues[4],
-      'blackPiece',
-    ).setScale(0.5);
-    this.bPiece.updatePosition(4, 3);
-    this.board[4][3] = this.bPiece;
-    this.blackPieces.add(this.bPiece);
+    // Delete this in the future
+    // this.bPiece = new BlackPiece(
+    //   this,
+    //   this.game.config.width * this.boardHorzValues[3],
+    //   this.game.config.height * this.boardVertValues[4],
+    //   'blackPiece',
+    // ).setScale(0.5);
+    // this.bPiece.updatePosition(4, 3);
+    // this.board[4][3] = this.bPiece;
+    // this.blackPieces.add(this.bPiece);
 
-    this.bPiece2 = this.board[1][4];
-    this.board[1][4] = 0;
-    this.bPiece2.destroy();
+    // this.bPiece2 = this.board[1][4];
+    // this.board[1][4] = 0;
+    // this.bPiece2.destroy();
 
-    this.bPiece3 = this.board[1][0];
-    this.board[1][0] = 0;
-    this.bPiece3.destroy();
+    // this.bPiece3 = this.board[1][0];
+    // this.board[1][0] = 0;
+    // this.bPiece3.destroy();
 
-    this.bPiece4 = new BlackPiece(
-      this,
-      this.game.config.width * this.boardHorzValues[6],
-      this.game.config.height * this.boardVertValues[3],
-      'blackPiece',
-    ).setScale(0.5);
-    this.bPiece4.updatePosition(3, 6);
-    this.board[3][6] = this.bPiece4;
-    this.blackPieces.add(this.bPiece4);
+    // this.bPiece4 = new BlackPiece(
+    //   this,
+    //   this.game.config.width * this.boardHorzValues[6],
+    //   this.game.config.height * this.boardVertValues[3],
+    //   'blackPiece',
+    // ).setScale(0.5);
+    // this.bPiece4.updatePosition(3, 6);
+    // this.board[3][6] = this.bPiece4;
+    // this.blackPieces.add(this.bPiece4);
 
-    this.rPiece = this.board[5][6];
-    this.board[5][6] = 0;
-    this.rPiece.destroy();
+    // this.rPiece = this.board[5][6];
+    // this.board[5][6] = 0;
+    // this.rPiece.destroy();
 
-    this.bPiece5 = new BlackPiece(
-      this,
-      this.game.config.width * this.boardHorzValues[6],
-      this.game.config.height * this.boardVertValues[5],
-      'blackPiece',
-    ).setScale(0.5);
-    this.bPiece5.updatePosition(5, 6);
-    this.board[5][6] = this.bPiece5;
-    this.blackPieces.add(this.bPiece5);
+    // this.bPiece5 = new BlackPiece(
+    //   this,
+    //   this.game.config.width * this.boardHorzValues[6],
+    //   this.game.config.height * this.boardVertValues[5],
+    //   'blackPiece',
+    // ).setScale(0.5);
+    // this.bPiece5.updatePosition(5, 6);
+    // this.board[5][6] = this.bPiece5;
+    // this.blackPieces.add(this.bPiece5);
 
-    this.bPiece6 = this.board[2][7];
-    this.board[2][7] = 0;
-    this.bPiece6.destroy();
+    // this.bPiece6 = this.board[2][7];
+    // this.board[2][7] = 0;
+    // this.bPiece6.destroy();
 
-    this.bPiece7 = this.board[0][5];
-    this.board[0][5] = 0;
-    this.bPiece7.destroy();
-    //Delete until here
+    // this.bPiece7 = this.board[0][5];
+    // this.board[0][5] = 0;
+    // this.bPiece7.destroy();
+    // Delete until here
 
     this.ghostPieces = [];
     console.log(this.board);
-    this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
+    console.log(this.color);
+    console.log(this.turn);
+    this.startGame();
+  }
+
+  startGame() {
+    if (this.turn) {
+      this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
+    } else {
+      console.log('Others turn');
+    }
   }
 
   deleteInteractiveness() {
-    this.redPieces.getChildren().forEach((piece) => {
+    this.group = this.color ? this.redPieces : this.blackPieces;
+    this.group.getChildren().forEach((piece) => {
       piece.disableInteractive();
     });
   }
@@ -111,7 +131,8 @@ class SceneGame extends Phaser.Scene {
     this.scene.scene.board[newPosition[0]][newPosition[1]] = piece;
     this.deleteInteractiveness();
     this.checkEndGame();
-    this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
+    this.changeTurn(piece, newPosition);
+    // this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
   }
 
   multiJump(piece, positionArray) {
@@ -132,9 +153,14 @@ class SceneGame extends Phaser.Scene {
     this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
   }
 
+  changeTurn(piece, newPosition) {
+    this.turn = !this.turn;
+  }
+
   checkEndGame() {
-    if (this.blackPieces.children.size === 0
-        || this.checkMovePossibility()) {
+    this.group = this.color ? this.blackPieces : this.redPieces;
+    if (this.group.children.size === 0
+        || this.checkMovePossibility(this.group)) {
       this.time.addEvent({
         delay: 3000,
         callback() {
@@ -146,22 +172,12 @@ class SceneGame extends Phaser.Scene {
     }
   }
 
-  checkMovePossibility() {
-    if (this.color) {
-      // eslint-disable-next-line consistent-return
-      this.blackPieces.getChildren().forEach((piece) => {
-        if (piece.movePossibility(false).length !== 0) {
-          return true;
-        }
-      });
-    } else {
-      // eslint-disable-next-line consistent-return
-      this.redPieces.getChildren().forEach((piece) => {
-        if (piece.movePossibility(true).length !== 0) {
-          return true;
-        }
-      });
-    }
+  checkMovePossibility(group) {
+    group.getChildren().forEach((piece) => {
+      if (piece.movePossibility(!this.color).length !== 0) {
+        return true;
+      }
+    });
 
     return false;
   }
@@ -187,13 +203,13 @@ class SceneGame extends Phaser.Scene {
 
     for (let i = 0; i < 8; i += 1) {
       if (i % 2 === 0) {
-        this.board[5][i] = this.createPiece(5, i, this.color);
-        this.board[1][i] = this.createPiece(1, i, !this.color);
-        this.board[7][i] = this.createPiece(7, i, this.color);
+        this.board[5][i] = this.createPiece(5, i, true);
+        this.board[1][i] = this.createPiece(1, i, false);
+        this.board[7][i] = this.createPiece(7, i, true);
       } else {
-        this.board[6][i] = this.createPiece(6, i, this.color);
-        this.board[2][i] = this.createPiece(2, i, !this.color);
-        this.board[0][i] = this.createPiece(0, i, !this.color);
+        this.board[6][i] = this.createPiece(6, i, true);
+        this.board[2][i] = this.createPiece(2, i, false);
+        this.board[0][i] = this.createPiece(0, i, false);
       }
     }
 
@@ -230,8 +246,9 @@ class SceneGame extends Phaser.Scene {
   }
 
   setInteractiveness(boardV, boardH) {
-    this.redPieces.getChildren().forEach((piece) => {
-      if (piece.movePossibility(this.scene.color).length !== 0) {
+    this.group = this.color ? this.redPieces : this.blackPieces;
+    this.group.getChildren().forEach((piece) => {
+      if (piece.movePossibility(this.color).length !== 0) {
         piece.setInteractive();
 
         piece.on('pointerover', () => {
@@ -243,7 +260,7 @@ class SceneGame extends Phaser.Scene {
         });
 
         piece.on('pointerup', () => {
-          const possMoves = piece.movePossibility(this.scene.color);
+          const possMoves = piece.movePossibility(this.color);
           this.deleteGhosts();
           for (let i = 0; i < possMoves.length; i += 1) {
             if (typeof possMoves[i][0] === 'object') {
@@ -258,7 +275,7 @@ class SceneGame extends Phaser.Scene {
                 ghost.on('pointerup', () => {
                   this.multiJump(piece, possMoves[i][j]);
                 });
-                this.scene.scene.ghostPieces.push(ghost);
+                this.ghostPieces.push(ghost);
               }
             } else {
               const ghost = this.add.image(
@@ -271,7 +288,7 @@ class SceneGame extends Phaser.Scene {
               ghost.on('pointerup', () => {
                 this.jump(piece, possMoves[i]);
               });
-              this.scene.scene.ghostPieces.push(ghost);
+              this.ghostPieces.push(ghost);
             }
           }
         });

@@ -1,7 +1,5 @@
 import Phaser from 'phaser';
-// import express from 'express';
 import makeId from '../gameHelpers';
-// import waitSecondPlayer from '../apiCalls';
 
 class SceneMainMenu extends Phaser.Scene {
   constructor() {
@@ -9,7 +7,6 @@ class SceneMainMenu extends Phaser.Scene {
   }
 
   create() {
-    // const api = express();
     // eslint-disable-next-line no-undef
     this.socket = io();
     this.color = false;
@@ -36,7 +33,7 @@ class SceneMainMenu extends Phaser.Scene {
       this.startGame.text = id;
       this.startGame.disableInteractive();
 
-      this.socket.emit('startGame', 1);
+      this.socket.emit('startGame', id);
 
       this.socket.on('startingGame', (message, players) => {
         this.color = false;

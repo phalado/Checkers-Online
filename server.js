@@ -23,12 +23,14 @@ io.on('connection', (socket) => {
   players[number] = {
     playerId: socket.id,
     color: Object.size(players) === 0,
+    boardId: '',
   };
 
   let conections = 0;
 
-  socket.on('startGame', () => {
+  socket.on('startGame', (bID) => {
     conections = Object.size(players);
+    players[number].boardId = bID;
     if (conections <= 1) {
       socket.emit('startingGame', true, players);
     } else {
@@ -39,12 +41,12 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('change', (value) => {
+  socket.on('change', (value, piece, positionArray) => {
     console.log(value);
     if (value === 0) {
-      io.to(players[1].playerId).emit('changeTurn', 1);
+      io.to(players[1].playerId).emit('changeTurn', 1, piece, positionArray);
     } else {
-      io.to(players[0].playerId).emit('changeTurn', 0);
+      io.to(players[0].playerId).emit('changeTurn', 0, piece, positionArray);
     }
   });
 

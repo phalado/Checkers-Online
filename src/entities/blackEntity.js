@@ -10,6 +10,8 @@ class BlackPiece extends Entity {
 
   movePossibility(color) {
     this.MP = [];
+    console.log('color');
+    console.log(color);
     this.pos = [this.getData('boardV'), this.getData('boardH')];
     const type = color ? 'RedPiece' : 'BlackPiece';
 

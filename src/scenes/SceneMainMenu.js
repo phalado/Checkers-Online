@@ -45,61 +45,7 @@ class SceneMainMenu extends Phaser.Scene {
         }
       });
     });
-
-    // this.enterPlay1 = this.add.text(
-    //   this.game.config.width * 0.2,
-    //   this.game.config.height * 0.3,
-    //   'Enter as player 1', {
-    //     color: '#d0c600',
-    //     fontFamily: 'sans-serif',
-    //     fontSize: '30px',
-    //     lineHeight: 1.3,
-    //     align: 'center',
-    //   },
-    // );
-
-    // this.enterPlay1.setInteractive();
-    // this.enterGame.on('pointerup', () => {
-    //   this.scene.start('SceneGame', { socket: this.socket, color: true });
-    // });
-
-    // this.enterPlay2 = this.add.text(
-    //   this.game.config.width * 0.2,
-    //   this.game.config.height * 0.4,
-    //   'Enter as player 2', {
-    //     color: '#d0c600',
-    //     fontFamily: 'sans-serif',
-    //     fontSize: '30px',
-    //     lineHeight: 1.3,
-    //     align: 'center',
-    //   },
-    // );
-
-    // this.enterPlay2.setInteractive();
-    // this.enterPlay2.on('pointerup', () => {
-    //   this.scene.start('SceneGame', { socket: this.socket, color: false });
-    // });
   }
-
-  // update() {
-  //   this.time.addEvent({
-  //     delay: 1000,
-  //     callback() {
-  //       this.socket.on('startingGame', (message) => {
-  //         if (message) {
-  //           console.log('Waiting for the other player!');
-  //           this.color = message;
-  //           console.log(this.color);
-  //         } else {
-  //           console.log('Starting game!');
-  //           this.scene.start('SceneGame', { socket: this.socket, color: this.color });
-  //         }
-  //       });
-  //     },
-  //     callbackScope: this,
-  //     loop: false,
-  //   });
-  // }
 }
 
 export default SceneMainMenu;

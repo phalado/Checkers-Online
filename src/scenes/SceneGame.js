@@ -38,15 +38,23 @@ class SceneGame extends Phaser.Scene {
     this.turn = this.color;
 
     this.physics.add.collider(this.redPieces, this.blackPieces, (red, black) => {
-      console.log('Phisics');
-      console.log(this.color);
+      // console.log('Physics');
+      // console.log(this.turn);
+      // console.log(this.color);
+      // console.log(black);
+      // console.log(red);
+      console.log('Here 5');
       console.log(this.turn);
-      this.board[black.getData('boardV')][black.getData('boardH')] = 0;
-      if (this.turn) {
-        this.color ? black.destroy() : red.destroy;
+      if ((this.turn && this.color) || (!this.turn && !this.color)) {
+        this.board[black.getData('boardV')][black.getData('boardH')] = 0;
+        black.destroy();
       } else {
-        this.color ? red.destroy() : black.destroy;
+        this.board[red.getData('boardV')][red.getData('boardH')] = 0;
+        red.destroy();
       }
+      // console.log(black);
+      // console.log(red);
+      console.log(this.board);
     });
 
     this.playerNumber = this.color ? 0 : 1;
@@ -123,7 +131,7 @@ class SceneGame extends Phaser.Scene {
 
   wait() {
     this.time.addEvent({
-      delay: 1000,
+      delay: 0,
       callback() {
         this.socket.on('changeTurn', (value, opPiece, positionArray) => {
           if (value === this.playerNumber) {
@@ -171,13 +179,21 @@ class SceneGame extends Phaser.Scene {
       this.moveAnim(piece, positionArray[i], i * 1000);
     }
 
+    console.log('Here 1');
+    console.log(this.turn);
     setTimeout(() => {
-      console.log('HEREEEEEEEEEEEEEEEEEE');
+      // console.log('HEREEEEEEEEEEEEEEEEEE');
+      console.log('Here 2');
+      console.log(this.turn);
       this.board[positionArray[lenf - 1][0]][positionArray[lenf - 1][1]] = piece;
       piece.updatePosition(...positionArray[lenf - 1]);
-      this.changeTurn();
+      this.turn = true;
       this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
+      console.log('Here 3');
+      console.log(this.turn);
     }, 1000 * lenf);
+    console.log('Here 4');
+    console.log(this.turn);
   }
 
   deleteInteractiveness() {
@@ -187,21 +203,21 @@ class SceneGame extends Phaser.Scene {
     });
   }
 
-  jump(piece, newPosition) {
-    const v = piece.getData('boardV');
-    const h = piece.getData('boardH');
-    this.board[v][h] = 0;
+  // jump(piece, newPosition) {
+  //   const v = piece.getData('boardV');
+  //   const h = piece.getData('boardH');
+  //   this.board[v][h] = 0;
 
-    this.moveAnim(piece, newPosition);
-    piece.updatePosition(...newPosition);
-    this.board[newPosition[0]][newPosition[1]] = piece;
-    this.deleteInteractiveness();
-    this.checkEndGame();
-    this.changeTurn(piece, newPosition);
-    this.socket.emit('change', this.playerNumber, true, piece, newPosition);
-    this.wait();
-    // this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
-  }
+  //   this.moveAnim(piece, newPosition);
+  //   piece.updatePosition(...newPosition);
+  //   this.board[newPosition[0]][newPosition[1]] = piece;
+  //   this.deleteInteractiveness();
+  //   this.checkEndGame();
+  //   this.changeTurn(piece, newPosition);
+  //   this.socket.emit('change', this.playerNumber, true, piece, newPosition);
+  //   this.wait();
+  //   // this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
+  // }
 
   multiJump(piece, positionArray) {
     const v = piece.getData('boardV');
@@ -211,25 +227,28 @@ class SceneGame extends Phaser.Scene {
     this.deleteGhosts();
 
     for (let i = 0; i < lenf; i += 1) {
-      this.moveAnim(piece, positionArray[i], i * 1000);
+      this.moveAnim(piece, positionArray[i], i * 10);
     }
+
+    console.log('Here 1');
+    console.log(this.turn);
     setTimeout(() => {
+      console.log('Here 2');
+      console.log(this.turn);
       this.board[positionArray[lenf - 1][0]][positionArray[lenf - 1][1]] = piece;
       piece.updatePosition(...positionArray[lenf - 1]);
       this.deleteInteractiveness();
-      this.checkEndGame();
-      this.changeTurn();
-      this.socket.emit('change',
-        this.playerNumber,
-        [v, h],
-        positionArray);
+      // this.checkEndGame();
+      this.turn = false;
+      this.socket.emit('change', this.playerNumber, [v, h], positionArray);
       this.wait();
+      console.log('Here 3');
+      console.log(this.turn);
     }, 1000 * lenf);
-    // this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
-  }
+    console.log('Here 4');
+    console.log(this.turn);
 
-  changeTurn() {
-    this.turn = !this.turn;
+    // this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
   }
 
   checkEndGame() {
@@ -321,7 +340,6 @@ class SceneGame extends Phaser.Scene {
   }
 
   setInteractiveness(boardV, boardH) {
-    console.log(this.color);
     this.group = this.color ? this.redPieces : this.blackPieces;
     this.ghostColor = this.color ? 'redPiece' : 'blackPiece';
     this.group.getChildren().forEach((piece) => {

@@ -11,7 +11,7 @@ class RedPiece extends Entity {
   movePossibility(color) {
     this.MP = [];
     this.pos = [this.getData('boardV'), this.getData('boardH')];
-    const type = color ? 'RedPiece' : 'BlackPiece';
+    const type = color ? 'BlackPiece' : 'RedPiece';
 
     this.MP = this.moveUp(this.pos, this.MP);
     this.MP = this.jumpUp(this.pos, this.MP, type);
@@ -28,15 +28,15 @@ class RedPiece extends Entity {
     this.setData('boardV', v);
     this.setData('boardH', h);
 
-    if (v === 0 && this.scene.color) {
+    if (v === 0) {
       this.setData('king', true);
       this.setTexture('redChecker');
     }
 
-    if (v === 7 && !this.scene.color) {
-      this.setData('king', true);
-      this.setTexture('redChecker');
-    }
+    // if (v === 7 && !this.scene.color) {
+    //   this.setData('king', true);
+    //   this.setTexture('redChecker');
+    // }
   }
 
   // update() {

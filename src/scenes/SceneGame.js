@@ -9,7 +9,12 @@ class SceneGame extends Phaser.Scene {
 
   init(data) {
     this.socket = data.socket;
-    this.color = data.color;
+    this.players = data.players;
+    Object.keys(this.players).forEach((id) => {
+      if (this.players[id].playerId === this.socket.id) {
+        this.color = this.players[id].color;
+      }
+    });
   }
 
   preload() {
@@ -41,6 +46,7 @@ class SceneGame extends Phaser.Scene {
     });
 
     this.turn = this.color;
+    this.playerNumber = this.color ? 0 : 1;
     this.boardVertValues = [0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88];
     this.boardHorzValues = [0.214, 0.295, 0.378, 0.46, 0.54, 0.623, 0.707, 0.788];
 
@@ -100,8 +106,6 @@ class SceneGame extends Phaser.Scene {
 
     this.ghostPieces = [];
     console.log(this.board);
-    console.log(this.color);
-    console.log(this.turn);
     this.startGame();
   }
 
@@ -110,7 +114,24 @@ class SceneGame extends Phaser.Scene {
       this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
     } else {
       console.log('Others turn');
+      this.wait();
     }
+  }
+
+  wait() {
+    this.time.addEvent({
+      delay: 1000,
+      callback() {
+        this.socket.on('changeTurn', (value) => {
+          if (value === this.playerNumber) {
+            this.changeTurn();
+            this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
+          }
+        });
+      },
+      callbackScope: this,
+      loop: false,
+    });
   }
 
   deleteInteractiveness() {
@@ -132,6 +153,8 @@ class SceneGame extends Phaser.Scene {
     this.deleteInteractiveness();
     this.checkEndGame();
     this.changeTurn(piece, newPosition);
+    this.socket.emit('change', this.playerNumber);
+    this.wait();
     // this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
   }
 
@@ -246,7 +269,10 @@ class SceneGame extends Phaser.Scene {
   }
 
   setInteractiveness(boardV, boardH) {
+    console.log(this.playerNumber);
+    console.log(this.turn);
     this.group = this.color ? this.redPieces : this.blackPieces;
+    this.ghostColor = this.color ? 'redPiece' : 'blackPiece';
     this.group.getChildren().forEach((piece) => {
       if (piece.movePossibility(this.color).length !== 0) {
         piece.setInteractive();
@@ -268,7 +294,7 @@ class SceneGame extends Phaser.Scene {
                 const ghost = this.add.image(
                   this.game.config.width * boardH[possMoves[i][j][possMoves[i][j].length - 1][1]],
                   this.game.config.height * boardV[possMoves[i][j][possMoves[i][j].length - 1][0]],
-                  'redPiece',
+                  this.ghostColor,
                 ).setScale(0.5).setAlpha(0.5);
 
                 ghost.setInteractive();
@@ -281,7 +307,7 @@ class SceneGame extends Phaser.Scene {
               const ghost = this.add.image(
                 this.game.config.width * boardH[possMoves[i][1]],
                 this.game.config.height * boardV[possMoves[i][0]],
-                'redPiece',
+                this.ghostColor,
               ).setScale(0.5).setAlpha(0.5);
 
               ghost.setInteractive();

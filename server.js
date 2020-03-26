@@ -10,7 +10,7 @@ const players = {};
 
 app.use(express.static(__dirname + '/dist'));
 
-app.get('/app', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
@@ -19,30 +19,39 @@ const port = process.env.PORT || 8082;
 io.on('connection', (socket) => {
   console.log('a user connected');
   console.log(Object.size(players));
-  players[socket.id] = {
+  const number = Object.size(players);
+  players[number] = {
     playerId: socket.id,
     color: Object.size(players) === 0,
   };
 
-  socket.broadcast.emit('newPlayer', players[socket.id]);
+  let conections = 0;
+
+  socket.on('startGame', () => {
+    conections = Object.size(players);
+    if (conections <= 1) {
+      socket.emit('startingGame', true, players);
+    } else {
+      setTimeout(() => {
+        io.to(players[0].playerId).emit('startingGame', false, players);
+        io.to(players[1].playerId).emit('startingGame', false, players);
+      }, 2000);
+    }
+  });
+
+  socket.on('change', (value) => {
+    console.log(value);
+    if (value === 0) {
+      io.to(players[1].playerId).emit('changeTurn', 1);
+    } else {
+      io.to(players[0].playerId).emit('changeTurn', 0);
+    }
+  });
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
     delete players[socket.id];
     io.emit('disconnect', socket.id);
-  });
-
-  let conections = 0;
-
-  socket.on('startGame', () => {
-    console.log(players);
-    conections = Object.size(players);
-    console.log(conections);
-    if (conections === 1) {
-      socket.broadcast.emit('startingGame', true);
-    } else {
-      socket.broadcast.emit('startingGame', false);
-    }
   });
 });
 

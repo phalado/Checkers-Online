@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 // import express from 'express';
 import makeId from '../gameHelpers';
-import waitSecondPlayer from '../apiCalls';
+// import waitSecondPlayer from '../apiCalls';
 
 class SceneMainMenu extends Phaser.Scene {
   constructor() {
@@ -13,6 +13,10 @@ class SceneMainMenu extends Phaser.Scene {
     // eslint-disable-next-line no-undef
     this.socket = io();
     this.color = false;
+
+    this.socket.on('newplayer', (sckt) => {
+      console.log(sckt);
+    });
 
     this.startGame = this.add.text(
       this.game.config.width * 0.2,
@@ -34,57 +38,71 @@ class SceneMainMenu extends Phaser.Scene {
 
       this.socket.emit('startGame', 1);
 
-      // this.socket.on('startingGame', (message) => {
-      //   this.color = false;
-      //   console.log(message);
-      //   while (message) {
-      //     console.log('Waiting for the other player!');
-      //     this.color = true;
-      //   }
-      //   console.log(message);
-      //   console.log(this.color);
-      //   console.log('Starting game!');
-      //   this.scene.start('SceneGame', { socket: this.socket, color: this.color });
-      // });
+      this.socket.on('startingGame', (message, players) => {
+        this.color = false;
+        if (message) {
+          this.startGame.text = 'Waiting for the other player!';
+          this.color = true;
+        } else {
+          this.scene.start('SceneGame', { socket: this.socket, color: this.color, players });
+        }
+      });
     });
 
-    this.enterGame = this.add.text(
-      this.game.config.width * 0.2,
-      this.game.config.height * 0.3,
-      'Enter a game', {
-        color: '#d0c600',
-        fontFamily: 'sans-serif',
-        fontSize: '30px',
-        lineHeight: 1.3,
-        align: 'center',
-      },
-    );
+    // this.enterPlay1 = this.add.text(
+    //   this.game.config.width * 0.2,
+    //   this.game.config.height * 0.3,
+    //   'Enter as player 1', {
+    //     color: '#d0c600',
+    //     fontFamily: 'sans-serif',
+    //     fontSize: '30px',
+    //     lineHeight: 1.3,
+    //     align: 'center',
+    //   },
+    // );
 
-    this.enterGame.setInteractive();
-    this.enterGame.on('pointerup', () => {
-      this.scene.start('SceneGame');
-    });
+    // this.enterPlay1.setInteractive();
+    // this.enterGame.on('pointerup', () => {
+    //   this.scene.start('SceneGame', { socket: this.socket, color: true });
+    // });
+
+    // this.enterPlay2 = this.add.text(
+    //   this.game.config.width * 0.2,
+    //   this.game.config.height * 0.4,
+    //   'Enter as player 2', {
+    //     color: '#d0c600',
+    //     fontFamily: 'sans-serif',
+    //     fontSize: '30px',
+    //     lineHeight: 1.3,
+    //     align: 'center',
+    //   },
+    // );
+
+    // this.enterPlay2.setInteractive();
+    // this.enterPlay2.on('pointerup', () => {
+    //   this.scene.start('SceneGame', { socket: this.socket, color: false });
+    // });
   }
 
-  update() {
-    this.time.addEvent({
-      delay: 1000,
-      callback() {
-        this.socket.on('startingGame', (message) => {
-          if (message) {
-            console.log('Waiting for the other player!');
-            this.color = message;
-            console.log(this.color);
-          } else {
-            console.log('Starting game!');
-            this.scene.start('SceneGame', { socket: this.socket, color: this.color });
-          }
-        });
-      },
-      callbackScope: this,
-      loop: false,
-    });
-  }
+  // update() {
+  //   this.time.addEvent({
+  //     delay: 1000,
+  //     callback() {
+  //       this.socket.on('startingGame', (message) => {
+  //         if (message) {
+  //           console.log('Waiting for the other player!');
+  //           this.color = message;
+  //           console.log(this.color);
+  //         } else {
+  //           console.log('Starting game!');
+  //           this.scene.start('SceneGame', { socket: this.socket, color: this.color });
+  //         }
+  //       });
+  //     },
+  //     callbackScope: this,
+  //     loop: false,
+  //   });
+  // }
 }
 
 export default SceneMainMenu;

@@ -19,7 +19,7 @@ class SceneGameOver extends Phaser.Scene {
     this.gameOverSceneScore = this.add.text(
       this.game.config.width * 0.3,
       this.game.config.height * 0.3,
-      'Someone won!!!!', {
+      this.textWon, {
         color: '#d0c600',
         fontFamily: 'sans-serif',
         fontSize: '50px',

@@ -28,11 +28,6 @@ class BlackPiece extends Entity {
     this.setData('boardV', v);
     this.setData('boardH', h);
 
-    // if (v === 0 && !this.scene.color) {
-    //   this.setData('king', true);
-    //   this.setTexture('blackChecker');
-    // }
-
     if (v === 7) {
       this.setData('king', true);
       this.setTexture('blackChecker');

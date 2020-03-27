@@ -32,17 +32,7 @@ class RedPiece extends Entity {
       this.setData('king', true);
       this.setTexture('redChecker');
     }
-
-    // if (v === 7 && !this.scene.color) {
-    //   this.setData('king', true);
-    //   this.setTexture('redChecker');
-    // }
   }
-
-  // update() {
-  //   this.x = this.scene.game.config.width * this.scene.boardHValues[this.getData('boardH')];
-  //   this.y = this.scene.game.config.height * this.scene.boardVValues[this.getData('boardV')];
-  // }
 }
 
 export default RedPiece;

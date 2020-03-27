@@ -8,7 +8,7 @@ const config = {
   parent: 'divld',
   width: 800,
   height: 600,
-  backgroundColor: 'black',
+  backgroundColor: 'blue',
   dom: {
     createContainer: true,
   },

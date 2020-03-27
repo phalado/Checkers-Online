@@ -63,11 +63,11 @@ class SceneMainMenu extends Phaser.Scene {
 
       const div = document.createElement('div');
       div.innerHTML = `
-        <input type="text" id="gameID" placeholder="Enter the game's ID" style="font-size: 1.5rem width: ${this.game.config.width * 0.25}"><br>
+        <input type="text" id="gameID" placeholder="Enter the game's ID" style="font-size: 1.2rem; width: 200px"><br>
         <input type="button" name="submitButton" value="Enter game" style="font-size: 1.5rem">
       `;
 
-      const element = this.add.dom(500, 480, div);
+      const element = this.add.dom(800, 280, div);
       element.addListener('click');
 
       element.on('click', (event) => {
@@ -90,7 +90,6 @@ class SceneMainMenu extends Phaser.Scene {
         }
       });
     });
-
   }
 }
 

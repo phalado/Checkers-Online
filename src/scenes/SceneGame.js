@@ -11,11 +11,6 @@ class SceneGame extends Phaser.Scene {
     this.socket = data.socket;
     this.boardID = data.boardID;
     this.color = data.color;
-    // Object.keys(this.players).forEach((id) => {
-    //   if (this.players[id].playerId === this.socket.id) {
-    //     this.color = this.players[id].color;
-    //   }
-    // });
   }
 
   preload() {
@@ -28,12 +23,11 @@ class SceneGame extends Phaser.Scene {
 
   create() {
     this.boardImg = this.add.image(
-      this.game.config.width * 0.5,
+      300,
       this.game.config.height * 0.5,
       'board',
     );
 
-    // eslint-disable-next-line no-undef
     this.redPieces = this.add.group();
     this.blackPieces = this.add.group();
     this.turn = this.color;
@@ -50,9 +44,64 @@ class SceneGame extends Phaser.Scene {
 
     this.playerNumber = this.color ? 0 : 1;
     this.boardVertValues = [0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88];
-    this.boardHorzValues = [0.214, 0.295, 0.378, 0.46, 0.54, 0.623, 0.707, 0.788];
+    this.boardHorzValues = [0.09, 0.171, 0.253, 0.335, 0.415, 0.498, 0.582, 0.663];
 
     this.board = this.createBoard();
+
+    this.textConfig = {
+      color: 'white',
+      fontFamily: 'sans-serif',
+      fontSize: '25px',
+      lineHeight: 1.3,
+      align: 'center',
+    };
+
+    this.textGameNumber = this.add.text(
+      610,
+      this.game.config.height * 0.03,
+      `Game number:\n ${this.boardID}`,
+      this.textConfig,
+    );
+
+    this.textPlay1 = this.add.text(
+      610,
+      this.game.config.height * 0.2,
+      'Player 1 - Red',
+      this.textConfig,
+    );
+    this.textPlay1.setColor('white');
+
+    this.textPlay1Turn = this.add.text(
+      610,
+      this.game.config.height * 0.30,
+      'YOUR TURN',
+      this.textConfig,
+    );
+    this.textPlay1Turn.setColor('Yellow');
+
+    this.textPlay2 = this.add.text(
+      610,
+      this.game.config.height * 0.6,
+      'Player 2 - Black',
+      this.textConfig,
+    );
+    this.textPlay2.setColor('white');
+
+    this.textPlay2Turn = this.add.text(
+      610,
+      this.game.config.height * 0.70,
+      'YOUR TURN',
+      this.textConfig,
+    );
+    this.textPlay2Turn.setColor('Yellow');
+
+    if (this.color) {
+      this.textPlay2Turn.text = "OPPONENT'S\n TURN";
+    } else {
+      this.textPlay1Turn.text = "OPPONENT'S\n TURN";
+    }
+
+    this.changeTurn();
 
     // Delete this in the future
     // this.bPiece = new BlackPiece(
@@ -124,7 +173,17 @@ class SceneGame extends Phaser.Scene {
     this.time.addEvent({
       delay: 0,
       callback() {
-        this.socket.on('changeTurn', (value, opPiece, positionArray) => {
+        this.socket.on('changeTurn', (value, opPiece, positionArray, gameOver) => {
+          if (gameOver) {
+            this.time.addEvent({
+              delay: 3000,
+              callback() {
+                this.scene.start('SceneGameOver', { victor: value });
+              },
+              callbackScope: this,
+              loop: true,
+            });
+          }
           if (value === this.color) {
             let pisc = '';
             const group = this.color ? this.blackPieces : this.redPieces;
@@ -158,6 +217,7 @@ class SceneGame extends Phaser.Scene {
       piece.updatePosition(...positionArray[lenf - 1]);
       this.checkEndGame();
       this.turn = true;
+      this.changeTurn();
       this.setInteractiveness(this.boardVertValues, this.boardHorzValues);
     }, 1000 * lenf);
   }
@@ -184,21 +244,23 @@ class SceneGame extends Phaser.Scene {
       this.board[positionArray[lenf - 1][0]][positionArray[lenf - 1][1]] = piece;
       piece.updatePosition(...positionArray[lenf - 1]);
       this.deleteInteractiveness();
-      this.checkEndGame();
+      this.checkEndGame([v, h], positionArray, this.boardID);
       this.turn = false;
+      this.changeTurn();
       this.socket.emit('change', this.color, [v, h], positionArray, this.boardID);
       this.wait();
     }, 1000 * lenf);
   }
 
-  checkEndGame() {
+  checkEndGame(piece, positionArray, bID) {
     this.group = this.color ? this.blackPieces : this.redPieces;
     if (this.group.children.size === 0
         || this.checkMovePossibility(this.group)) {
+      this.socket.emit('gameOver', this.color, piece, positionArray, bID);
       this.time.addEvent({
         delay: 3000,
         callback() {
-          this.scene.start('SceneGameOver');
+          this.scene.start('SceneGameOver', { victor: this.color });
         },
         callbackScope: this,
         loop: true,
@@ -277,6 +339,16 @@ class SceneGame extends Phaser.Scene {
       value.destroy();
     });
     this.ghostPieces = [];
+  }
+
+  changeTurn() {
+    if ((this.turn && this.color) || (!this.turn && !this.color)) {
+      this.textPlay1Turn.setColor('red');
+      this.textPlay2Turn.setColor('gray');
+    } else {
+      this.textPlay1Turn.setColor('gray');
+      this.textPlay2Turn.setColor('red');
+    }
   }
 
   setInteractiveness(boardV, boardH) {

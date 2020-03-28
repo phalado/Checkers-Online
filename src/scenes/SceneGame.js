@@ -269,6 +269,7 @@ class SceneGame extends Phaser.Scene {
   }
 
   checkMovePossibility(group) {
+    // eslint-disable-next-line consistent-return
     group.getChildren().forEach((piece) => {
       if (piece.movePossibility(!this.color).length !== 0) {
         return true;
